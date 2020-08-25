@@ -16,7 +16,7 @@ end
 
 EstimatorInternals(index_set::AbstractIndexSet, sample_method::AbstractSampleMethod, options) =
 EstimatorInternals(
-                   DefaultInternals(index_set, sample_method, options), 
+                   DefaultInternals(index_set, sample_method, options),
                    IndexSetInternals(index_set, sample_method, options),
                    SampleMethodInternals(index_set, sample_method, options)
 )
@@ -37,8 +37,8 @@ function DefaultInternals(index_set, sample_method, options)
     indices = get_index_set(max_search_space, options[:max_index_set_param])
 
     sz = maximum(indices)
-    m = options[:nb_of_qoi] 
-    n = sample_method isa MC ? 1 : maximum(options[:nb_of_shifts].(collect(indices))) 
+    m = options[:nb_of_qoi]
+    n = sample_method isa MC ? 1 : maximum(options[:nb_of_shifts].(collect(indices)))
 
     T = Float64
     samples = [[Vector{T}(undef, 0) for index in CartesianIndices(sz + one(sz))] for i in 1:m, j in 1:n]
@@ -48,7 +48,7 @@ function DefaultInternals(index_set, sample_method, options)
     total_work = [0. for index in CartesianIndices(sz + one(sz))]
     total_time = [0. for index in CartesianIndices(sz + one(sz))]
     current_index_set = Set{Index{ndims(index_set)}}()
-    index_set_size = IndexSetSize(0, 0) 
+    index_set_size = IndexSetSize(0, 0)
 
     DefaultInternals(samples, samples_diff, nb_of_samples, total_work, total_time, current_index_set, index_set_size)
 end
@@ -135,8 +135,13 @@ function SampleMethodInternals(index_set, sample_method::QMC, options)
 
     sz = maximum(indices)
     R = CartesianIndices(sz + one(sz))
-    generators = [[ShiftedLatticeRule(options[:point_generator]) for i in 1:options[:nb_of_shifts](I)] for I in R]
 
+	if(options[:point_generator] isa AbstractLatticeRule)
+    generators = [[ShiftedLatticeRule(options[:point_generator]) for i in 1:options[:nb_of_shifts](I)] for I in R]
+    elseif(options[:point_generator] isa AbstractDigitalNets)
+    generators = [[DigitalShiftedDigitalNets32(options[:point_generator]) for i in 1:options[:nb_of_shifts](I)] for I in R]
+    end
+	
     QMCInternals(generators)
 end
 
@@ -195,7 +200,7 @@ end
 
 logbook(estimator::Estimator{<:AD}) = estimator.internals.index_set_internals.logbook
 
-log_adaptive_index_set(estimator::Estimator{<:AD}, max_index) = push!(estimator.internals.index_set_internals.logbook, tuple(copy(old_set(estimator)), copy(active_set(estimator)), max_index)) 
+log_adaptive_index_set(estimator::Estimator{<:AD}, max_index) = push!(estimator.internals.index_set_internals.logbook, tuple(copy(old_set(estimator)), copy(active_set(estimator)), max_index))
 
 clear(estimator::Estimator{<:AD}) = begin
     empty!(current_index_set(estimator))
@@ -213,8 +218,8 @@ end
 function IndexSetInternals(index_set::U, sample_method, options)
     indices = get_index_set(options[:max_search_space], options[:max_index_set_param])
 
-    m = options[:nb_of_qoi] 
-    n = sample_method isa MC ? 1 : maximum(options[:nb_of_shifts].(collect(indices))) 
+    m = options[:nb_of_qoi]
+    n = sample_method isa MC ? 1 : maximum(options[:nb_of_shifts].(collect(indices)))
     d = ndims(index_set)
 
     accumulator = [Vector{Float64}(undef, 0) for i in 1:m, j in 1:n]
@@ -259,4 +264,14 @@ set_sz(estimator::Estimator, n) = begin
     end
     estimator.internals.default_internals.index_set_size.sz = n
     estimator.internals.default_internals.index_set_size.max_sz = max(sz(estimator), max_sz(estimator))
+end
+
+function get_point(point_generator::AbstractLatticeRule,k::Int64)
+
+	return LatticeRules.getpoint(point_generator,k)
+end
+
+function get_point(point_generator::AbstractDigitalNets,k::Int64)
+
+	return DigitalNets.getpoint(point_generator,k)
 end

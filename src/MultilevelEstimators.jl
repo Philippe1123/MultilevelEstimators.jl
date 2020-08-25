@@ -1,6 +1,6 @@
 ## MultilevelEstimators.jl : module file
 #
-# This file is part of MultilevelEstimators.jl - A Julia toolbox for 
+# This file is part of MultilevelEstimators.jl - A Julia toolbox for
 # Multilevel Monte Carlo Methods (c) Pieterjan Robbe, 2019
 
 module MultilevelEstimators
@@ -8,7 +8,7 @@ module MultilevelEstimators
 ## dependencies ##
 
 using Dates, DelimitedFiles, Distributed, JLD2, LinearAlgebra, Printf, Random, SpecialFunctions, Statistics
-
+using LatticeRules, DigitalNets
 ## import statements ##
 
 import Base: filter, ndims, eltype, show, diff, sum, :, print, length, getindex, run, push!, isless, >, <, ≥, ≤, +, zero, one, keys, haskey
@@ -27,7 +27,9 @@ export AbstractDistribution, Uniform, Normal, TruncatedNormal, Weibull , transfo
 
 export AbstractSampleMethod, MC, QMC
 
-export LatticeRule32, ShiftedLatticeRule, get_point
+#export LatticeRule32, ShiftedLatticeRule, get_point
+
+export get_point
 
 export Estimator
 
@@ -49,7 +51,7 @@ include("distribution.jl")
 
 include("sample_method.jl")
 
-include("lattice.jl")
+#include("lattice.jl")
 
 include("estimator.jl")
 
