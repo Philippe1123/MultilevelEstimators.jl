@@ -139,9 +139,15 @@ function SampleMethodInternals(index_set, sample_method::QMC, options)
 	if(options[:point_generator] isa AbstractLatticeRule)
     generators = [[ShiftedLatticeRule(options[:point_generator]) for i in 1:options[:nb_of_shifts](I)] for I in R]
     elseif(options[:point_generator] isa AbstractDigitalNets)
+
+	if(uinttype(options[:point_generator])==UInt32)
     generators = [[DigitalShiftedDigitalNets32(options[:point_generator]) for i in 1:options[:nb_of_shifts](I)] for I in R]
+     elseif(uinttype(options[:point_generator])==UInt64)
+     generators = [[DigitalShiftedDigitalNets64(options[:point_generator]) for i in 1:options[:nb_of_shifts](I)] for I in R]
     end
-	
+
+    end
+
     QMCInternals(generators)
 end
 
