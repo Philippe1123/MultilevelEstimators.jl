@@ -79,6 +79,10 @@ function print_status(estimator::Estimator)
 			println(str)
 		end
     end
+	table_hline(7)
+	println("          ")
+	println(string("Variance of the estimator = ",varest(estimator)))
+	println("          ")
     table_hline(7)
 end
 
