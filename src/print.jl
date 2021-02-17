@@ -83,6 +83,8 @@ function print_status(estimator::Estimator)
 	println("          ")
 	println(string("Variance of the estimator = ",varest(estimator)))
 	println("          ")
+	println(string("Std of the estimator = ",sqrt(varest(estimator))))
+	println("          ")
     table_hline(7)
 end
 
