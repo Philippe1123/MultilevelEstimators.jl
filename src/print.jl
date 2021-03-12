@@ -86,6 +86,14 @@ function print_status(estimator::Estimator)
 	println(string("Std of the estimator = ",sqrt(varest(estimator))))
 	println("          ")
     table_hline(7)
+
+
+	table_hline(7)
+	println("          ")
+	println(string("mean = ",mean0(estimator)))
+	println("          ")
+    table_hline(7)
+
 end
 
 #
