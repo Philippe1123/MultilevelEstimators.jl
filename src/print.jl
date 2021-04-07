@@ -80,18 +80,9 @@ function print_status(estimator::Estimator)
 		end
     end
 	table_hline(7)
-	println("          ")
 	println(string("Variance of the estimator = ",varest(estimator)))
-	println("          ")
 	println(string("Std of the estimator = ",sqrt(varest(estimator))))
-	println("          ")
-    table_hline(7)
-
-
-	table_hline(7)
-	println("          ")
-	println(string("mean = ",mean0(estimator)))
-	println("          ")
+	println(string("mean = ",mean(estimator)))
     table_hline(7)
 
 end
@@ -210,6 +201,8 @@ function print_mse_analysis(estimator::Estimator, ϵ::Real, θ::Real)
 end
 
 function print_qmc_convergence(estimator::Estimator{<:AbstractIndexSet, <:QMC}, ϵ::Real, θ::Real)
+	println(string("Std of the estimator = ",sqrt(varest(estimator))))
+	println(string("mean = ",mean(estimator)))
     println(string("Checking if variance of estimator is larger than θ*ϵ^2..."))
     converged = !(varest(estimator) > θ*ϵ^2)
     println(string("  ==> ", converged ? "no!" : "yes", " (", long(varest(estimator))[2:end], converged ? " < " : " > ", short(θ), " *", long(ϵ^2), ")"))
